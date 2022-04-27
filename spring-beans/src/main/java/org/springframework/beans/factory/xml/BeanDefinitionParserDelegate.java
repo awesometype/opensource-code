@@ -776,20 +776,20 @@ public class BeanDefinitionParserDelegate {
 	 * Parse a constructor-arg element.
 	 */
 	public void parseConstructorArgElement(Element ele, BeanDefinition bd) {
-		String indexAttr = ele.getAttribute(INDEX_ATTRIBUTE);
-		String typeAttr = ele.getAttribute(TYPE_ATTRIBUTE);
-		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
-		if (StringUtils.hasLength(indexAttr)) {
+		String indexAttr = ele.getAttribute(INDEX_ATTRIBUTE);// mu 获取属性index的值
+		String typeAttr = ele.getAttribute(TYPE_ATTRIBUTE);// mu 获取属性type的值
+		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);// mu 获取属性name的值
+		if (StringUtils.hasLength(indexAttr)) {// mu 处理属性index存在的情况
 			try {
 				int index = Integer.parseInt(indexAttr);
-				if (index < 0) {
+				if (index < 0) { // mu 不允许index属性的值小于0
 					error("'index' cannot be lower than 0", ele);
 				}
 				else {
 					try {
 						this.parseState.push(new ConstructorArgumentEntry(index));
-						Object value = parsePropertyValue(ele, bd, null);
-						ConstructorArgumentValues.ValueHolder valueHolder = new ConstructorArgumentValues.ValueHolder(value);
+						Object value = parsePropertyValue(ele, bd, null);// mu 解析constructor-arg标签下的所有属性值
+						ConstructorArgumentValues.ValueHolder valueHolder = new ConstructorArgumentValues.ValueHolder(value);// mu 将constructor-arg标签解析的属性值，封装在ValueHolder中
 						if (StringUtils.hasLength(typeAttr)) {
 							valueHolder.setType(typeAttr);
 						}
@@ -797,10 +797,10 @@ public class BeanDefinitionParserDelegate {
 							valueHolder.setName(nameAttr);
 						}
 						valueHolder.setSource(extractSource(ele));
-						if (bd.getConstructorArgumentValues().hasIndexedArgumentValue(index)) {// mu
+						if (bd.getConstructorArgumentValues().hasIndexedArgumentValue(index)) {// mu index属性的值不能重复，不然会混淆
 							error("Ambiguous constructor-arg entries for index " + index, ele);
 						}
-						else {
+						else {// 将constructor-arg标签解析到的所有信息，都封装在BeanDefinition中
 							bd.getConstructorArgumentValues().addIndexedArgumentValue(index, valueHolder);
 						}
 					}
@@ -813,10 +813,10 @@ public class BeanDefinitionParserDelegate {
 				error("Attribute 'index' of tag 'constructor-arg' must be an integer", ele);
 			}
 		}
-		else {
+		else { // mu 这里处理的是属性name存在的情况，index和name二选一吗？ 对在constructor-arg标签中，要么使用index属性来配置参数，要么就是用name属性来配置参数，所以，根据是否配置了indexAttr属性，可以看到出现了两个分支
 			try {
 				this.parseState.push(new ConstructorArgumentEntry());
-				Object value = parsePropertyValue(ele, bd, null);
+				Object value = parsePropertyValue(ele, bd, null);// mu
 				ConstructorArgumentValues.ValueHolder valueHolder = new ConstructorArgumentValues.ValueHolder(value);
 				if (StringUtils.hasLength(typeAttr)) {
 					valueHolder.setType(typeAttr);
@@ -824,7 +824,7 @@ public class BeanDefinitionParserDelegate {
 				if (StringUtils.hasLength(nameAttr)) {
 					valueHolder.setName(nameAttr);
 				}
-				valueHolder.setSource(extractSource(ele));
+				valueHolder.setSource(extractSource(ele));// mu
 				bd.getConstructorArgumentValues().addGenericArgumentValue(valueHolder);
 			}
 			finally {
@@ -914,22 +914,22 @@ public class BeanDefinitionParserDelegate {
 		// Should only have one child element: ref, value, list, etc.
 		NodeList nl = ele.getChildNodes();
 		Element subElement = null;
-		for (int i = 0; i < nl.getLength(); i++) {
+		for (int i = 0; i < nl.getLength(); i++) { //todo  mu 断点看看这里都是啥
 			Node node = nl.item(i);
 			if (node instanceof Element && !nodeNameEquals(node, DESCRIPTION_ELEMENT) &&
-					!nodeNameEquals(node, META_ELEMENT)) {
+					!nodeNameEquals(node, META_ELEMENT)) { // mu 不处理description标签和meta标签
 				// Child element is what we're looking for.
 				if (subElement != null) {
 					error(elementName + " must not contain more than one sub-element", ele);
 				}
-				else {
+				else {// mu 记录子标签
 					subElement = (Element) node;
 				}
 			}
 		}
 
-		boolean hasRefAttribute = ele.hasAttribute(REF_ATTRIBUTE);
-		boolean hasValueAttribute = ele.hasAttribute(VALUE_ATTRIBUTE);
+		boolean hasRefAttribute = ele.hasAttribute(REF_ATTRIBUTE);// mu 是否包含ref标签
+		boolean hasValueAttribute = ele.hasAttribute(VALUE_ATTRIBUTE);// mu 是否包含value标签
 		if ((hasRefAttribute && hasValueAttribute) ||
 				((hasRefAttribute || hasValueAttribute) && subElement != null)) {
 			error(elementName +
@@ -951,7 +951,7 @@ public class BeanDefinitionParserDelegate {
 			return valueHolder;
 		}
 		else if (subElement != null) {
-			return parsePropertySubElement(subElement, bd);
+			return parsePropertySubElement(subElement, bd);// mu 解析标签ele下的所有子标签的属性
 		}
 		else {
 			// Neither child element nor "ref" or "value" attribute found.
@@ -1012,23 +1012,23 @@ public class BeanDefinitionParserDelegate {
 			ref.setSource(extractSource(ele));
 			return ref;
 		}
-		else if (nodeNameEquals(ele, IDREF_ELEMENT)) {
+		else if (nodeNameEquals(ele, IDREF_ELEMENT)) {// mu 处理idref标签
 			return parseIdRefElement(ele);
 		}
-		else if (nodeNameEquals(ele, VALUE_ELEMENT)) {
+		else if (nodeNameEquals(ele, VALUE_ELEMENT)) {// mu 处理value标签
 			return parseValueElement(ele, defaultValueType);
 		}
-		else if (nodeNameEquals(ele, NULL_ELEMENT)) {
+		else if (nodeNameEquals(ele, NULL_ELEMENT)) {// mu 处理null标签
 			// It's a distinguished null value. Let's wrap it in a TypedStringValue
 			// object in order to preserve the source location.
 			TypedStringValue nullHolder = new TypedStringValue(null);
 			nullHolder.setSource(extractSource(ele));
 			return nullHolder;
 		}
-		else if (nodeNameEquals(ele, ARRAY_ELEMENT)) {
+		else if (nodeNameEquals(ele, ARRAY_ELEMENT)) {// mu 处理array标签
 			return parseArrayElement(ele, bd);
 		}
-		else if (nodeNameEquals(ele, LIST_ELEMENT)) {
+		else if (nodeNameEquals(ele, LIST_ELEMENT)) {// mu 处理list标签
 			return parseListElement(ele, bd);
 		}
 		else if (nodeNameEquals(ele, SET_ELEMENT)) {

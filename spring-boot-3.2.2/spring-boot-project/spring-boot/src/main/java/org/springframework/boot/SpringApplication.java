@@ -1350,7 +1350,7 @@ public class SpringApplication {
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
 	 */
-	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) { //mu 2024-02-26 入口
 		return new SpringApplication(primarySources).run(args);
 	}
 

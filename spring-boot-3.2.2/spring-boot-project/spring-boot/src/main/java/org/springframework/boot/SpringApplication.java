@@ -322,11 +322,11 @@ public class SpringApplication {
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
-		SpringApplicationRunListeners listeners = getRunListeners(args);
+		SpringApplicationRunListeners listeners = getRunListeners(args);// mu 2024-02-26
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
+			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);// mu 2024-02-26 环境变量的构造
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
 			context.setApplicationStartup(this.applicationStartup);
@@ -461,11 +461,11 @@ public class SpringApplication {
 				System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, Boolean.toString(this.headless)));
 	}
 
-	private SpringApplicationRunListeners getRunListeners(String[] args) {
+	private SpringApplicationRunListeners getRunListeners(String[] args) {// mu 2024-02-26 获取监听器集合，当有时间发生时调用监听器对应事件的方法
 		ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this);
 		argumentResolver = argumentResolver.and(String[].class, args);
 		List<SpringApplicationRunListener> listeners = getSpringFactoriesInstances(SpringApplicationRunListener.class,
-				argumentResolver);
+				argumentResolver);// mu 2024-02-26 FACTORIES_RESOURCE_LOCATION = "META-INF/spring.factories";
 		SpringApplicationHook hook = applicationHook.get();
 		SpringApplicationRunListener hookListener = (hook != null) ? hook.getRunListener(this) : null;
 		if (hookListener != null) {
